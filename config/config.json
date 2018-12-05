@@ -2,7 +2,7 @@
   "development": {
     "username": "root",
     "password": null,
-    "database": "exampledb",
+    "database": "rpg_game",
     "host": "localhost",
     "dialect": "mysql"
   },

@@ -8,6 +8,13 @@ module.exports = function(app) {
     });
   });
 
+  // Get all attacks
+  app.get("/api/attacks", function(req, res) {
+    db.attacks.findAll({}).then(function(dbAttacks) {
+      res.json(dbAttacks);
+    });
+  });
+
   // Create a new example
   app.post("/api/examples", function(req, res) {
     db.Example.create(req.body).then(function(dbExample) {
