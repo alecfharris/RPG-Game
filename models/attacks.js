@@ -6,7 +6,8 @@ module.exports = function (sequelize, DataTypes) {
         Accuracy: DataTypes.INTEGER,
         Magical: DataTypes.BOOLEAN
     },
-    {timestamps: false
+    {
+        timestamps: false
     });
     return Attacks;
 };
