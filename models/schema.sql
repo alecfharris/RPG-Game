@@ -30,6 +30,6 @@ CREATE TABLE characters (
     Magical_Defense int NOT NULL,
     Speed int NOT NULL,
     Weapons tinyint NOT NULL,
-    Mage_Magic tinyint NOT NULL
+    Mage_Magic tinyint NOT NULL,
     PRIMARY KEY (id)
 );
