@@ -452,3 +452,20 @@ var Message = new Phaser.Class({
 });
 
 var game = new Phaser.Game(config);
+var attacks;
+$.get('/api/attacks', function(data) {
+    console.log(data);
+    attacks = data;
+    for(var i = 0; i < attacks.length; i++) {
+        console.log(attacks[i].Weapon);
+    }
+});
+
+var characters;
+$.get('/api/characters', function(data) {
+    console.log(data);
+    characters = data;
+    for(var i = 0; i < characters.length; i++) {
+        console.log(characters[i].Name);
+    }
+});
