@@ -14,7 +14,12 @@ module.exports = function(app) {
       res.json(dbAttacks);
     });
   });
-
+  // Get all characters
+  app.get("/api/characters", function(req, res) {
+    db.characters.findAll({}).then(function(dbcharacters) {
+      res.json(dbcharacters);
+    });
+  });
   // Create a new example
   app.post("/api/examples", function(req, res) {
     db.Example.create(req.body).then(function(dbExample) {
