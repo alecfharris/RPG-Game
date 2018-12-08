@@ -73,8 +73,8 @@ var BootScene = new Phaser.Class({
         // load resources
         this.load.spritesheet('playerwarrior', 'assets/RPG_assets_warrior.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('playermage', 'assets/RPG_assets_mage.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.image('dragonblue', 'assets/dragonblue.png');
-        this.load.image('dragonorange', 'assets/dragonorange.png');
+        this.load.image('dragonblue', 'assets/EnemyPaladin.png');
+        this.load.image('dragonorange', 'assets/EnemySpellcaster.png');
     },
 
     create: function () {
