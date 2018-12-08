@@ -93,13 +93,11 @@ var BattleScene = new Phaser.Class({
         },
 
     nextTurn: function () {
-        // do {
             this.index++;
             // if there are no more units, we start again from the first one
             if(this.index >= this.units.length) {
                 this.index = 0;
             }
-        // } while(this.units[this.index].living);
         if (this.units[this.index] && this.units[this.index].living) {
             // if its player hero
             if (this.units[this.index] instanceof PlayerCharacter) {
@@ -453,6 +451,7 @@ var Message = new Phaser.Class({
 
 var game = new Phaser.Game(config);
 var attacks;
+var characters;
 $.get('/api/attacks', function(data) {
     console.log(data);
     attacks = data;
@@ -461,7 +460,7 @@ $.get('/api/attacks', function(data) {
     }
 });
 
-var characters;
+
 $.get('/api/characters', function(data) {
     console.log(data);
     characters = data;
