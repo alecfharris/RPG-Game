@@ -52,7 +52,36 @@ var Unit = new Phaser.Class({
             this.visible = false;
             this.menuItem = null;
         }
-    }
+    },
+    checkEndBattle: function() {        
+        var victory = true;
+        // if all enemies are dead we have victory
+        for(var i = 0; i < this.enemies.length; i++) {
+            if(this.enemies[i].living)
+                victory = false;
+        }
+        var gameOver = true;
+        // if all heroes are dead we have game over
+        for(var i = 0; i < this.heroes.length; i++) {
+            if(this.heroes[i].living)
+                gameOver = false;
+        }
+        return victory || gameOver;
+    },
+    endBattle: function() {       
+        // clear state, remove sprites
+        this.heroes.length = 0;
+        this.enemies.length = 0;
+        for(var i = 0; i < this.units.length; i++) {
+            // link item
+            this.units[i].destroy();            
+        }
+        this.units.length = 0;
+        // sleep the UI
+        this.scene.sleep('UIScene');
+        // return to WorldScene and sleep current BattleScene
+        this.scene.switch('WorldScene');
+    },
 });
 
 var Enemy = new Phaser.Class({
@@ -434,8 +463,8 @@ var EnemiesMenu = new Phaser.Class({
 var config = {
     type: Phaser.AUTO,
     parent: 'content',
-    width: 320,
-    height: 240,
+    width: 1080,
+    height: 768,
     zoom: 2,
     pixelArt: true,
     physics: {
