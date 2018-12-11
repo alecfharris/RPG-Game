@@ -21,6 +21,13 @@ module.exports = function(app) {
     });
   });
 
+  // Get high scores
+  app.get('/api/high_score', function(req, res) {
+    db.high_score.findAll({}).then(function(dbhighScores) {
+      res.json(dbhighScores);
+    });
+  });
+
   // // Get specific character
   //       app.get('/api/playerCharacter/:character', function (req, res) {
   //           let chosen = req.params.character;
@@ -35,6 +42,14 @@ module.exports = function(app) {
     
   //           });
   //       });
+
+
+  // Create a new high score
+  app.post('/api/high_score', function(req, res) {
+    db.high_score.create(req.body).then(function(dbhighScores) {
+      res.json(dbhighScores);
+    });
+  });
 
   // Create a new example
   app.post("/api/examples", function(req, res) {
