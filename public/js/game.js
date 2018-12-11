@@ -95,8 +95,9 @@ var BootScene = new Phaser.Class({
         // load resources
         this.load.spritesheet('playerwarrior', 'assets/RPG_assets_warrior.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('playermage', 'assets/RPG_assets_mage.png', { frameWidth: 16, frameHeight: 16 });
-        this.load.image('dragonblue', 'assets/dragonblue.png');
-        this.load.image('dragonorange', 'assets/dragonorange.png');
+
+        this.load.image('dragonblue', 'assets/EnemyPaladin.png');
+        this.load.image('dragonorange', 'assets/EnemySpellcaster.png');
         getCharacters();
     },
 
@@ -117,13 +118,11 @@ var BattleScene = new Phaser.Class({
         },
 
     nextTurn: function () {
-        // do {
-        this.index++;
-        // if there are no more units, we start again from the first one
-        if (this.index >= this.units.length) {
-            this.index = 0;
-        }
-        // } while(this.units[this.index].living);
+            this.index++;
+            // if there are no more units, we start again from the first one
+            if(this.index >= this.units.length) {
+                this.index = 0;
+            }
         if (this.units[this.index] && this.units[this.index].living) {
             // if its player hero
             if (this.units[this.index] instanceof PlayerCharacter) {
@@ -506,6 +505,7 @@ function getCharacters() {
 const getData = characterName => {for (char in characters) {
     if (characters[char].Name === characterName) {
         var data = characters[char];
+
     }
     return data;
 } 
