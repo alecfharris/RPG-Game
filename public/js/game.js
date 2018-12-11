@@ -104,9 +104,10 @@ var Unit = new Phaser.Class({
             Phaser.GameObjects.Sprite.call(this, scene, x, y, texture, frame);
 
             this.level = dbData.Level;
-            this.maxHp = dbData.HP = this.hp;
+            this.maxHp = dbData.HP;
+            this.hp = this.maxHp;
             this.pAtk = dbData.Physical_Attack;
-            this.pDef = dbData.Physical_Def;
+            this.pDef = dbData.Physical_Defense;
             this.mAtk = dbData.Magical_Attack;
             this.mDef = dbData.Magical_Defense;
             this.speed = dbData.Speed;
@@ -123,6 +124,7 @@ var Unit = new Phaser.Class({
     },
     attack: function (target) {
         if (target.living) {
+            this.damage = Math.floor((((2*parseInt(this.level)/5+2)*60*(parseInt(this.pAtk)/parseInt(target.pDef)))+2)/50);
             target.takeDamage(this.damage);
             this.scene.events.emit("Message", this.type + " attacks " + target.type + " for " + this.damage + " damage");
         }
@@ -138,7 +140,36 @@ var Unit = new Phaser.Class({
             stopwatch.stop();
             console.log("length of game: " + stopwatch.time);
         }
-    }
+    },
+    checkEndBattle: function() {        
+        var victory = true;
+        // if all enemies are dead we have victory
+        for(var i = 0; i < this.enemies.length; i++) {
+            if(this.enemies[i].living)
+                victory = false;
+        }
+        var gameOver = true;
+        // if all heroes are dead we have game over
+        for(var i = 0; i < this.heroes.length; i++) {
+            if(this.heroes[i].living)
+                gameOver = false;
+        }
+        return victory || gameOver;
+    },
+    endBattle: function() {       
+        // clear state, remove sprites
+        this.heroes.length = 0;
+        this.enemies.length = 0;
+        for(var i = 0; i < this.units.length; i++) {
+            // link item
+            this.units[i].destroy();            
+        }
+        this.units.length = 0;
+        // sleep the UI
+        this.scene.sleep('UIScene');
+        // return to WorldScene and sleep current BattleScene
+        this.scene.switch('WorldScene');
+    },
 });
 
 var Enemy = new Phaser.Class({
@@ -184,9 +215,8 @@ var BootScene = new Phaser.Class({
         // load resources
         this.load.spritesheet('playerwarrior', 'assets/RPG_assets_warrior.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('playermage', 'assets/RPG_assets_mage.png', { frameWidth: 16, frameHeight: 16 });
-
-        this.load.image('dragonblue', 'assets/EnemyPaladin.png');
-        this.load.image('dragonorange', 'assets/EnemySpellcaster.png');
+        this.load.image('dragonblue', 'assets/dragonblue.png');
+        this.load.image('dragonorange', 'assets/dragonorange.png');
         clock;
         getCharacters();
     },
@@ -246,8 +276,8 @@ var BattleScene = new Phaser.Class({
 
             // player character - warrior
             // var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, 20);
-            var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, characters[1]);
-            console.log(`warrior level ${warrior.level}`)
+            var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 9000, characters[4]);
+            console.log(`warrior level ${warrior.level}`);
             this.add.existing(warrior);
 
             // player character - mage
@@ -256,12 +286,13 @@ var BattleScene = new Phaser.Class({
             this.add.existing(mage);
 
             // var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 50, 3);
-            var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 3, characters[4]);
+            var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 3, characters[3]);
             // getData('Enemy Spellcaster'));
             this.add.existing(dragonblue);
+            console.log(`dragonblue health ${dragonblue.hp}`);
 
             // var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 50, 3);
-            var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 3, characters[5]);
+            var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 3, characters[1]);
             // getData('Enemy FightMage'));
             this.add.existing(dragonOrange);
 
@@ -524,8 +555,8 @@ var EnemiesMenu = new Phaser.Class({
 var config = {
     type: Phaser.AUTO,
     parent: 'content',
-    width: 320,
-    height: 240,
+    width: 1080,
+    height: 768,
     zoom: 2,
     pixelArt: true,
     physics: {
@@ -600,3 +631,4 @@ const getData = characterName => {for (char in characters) {
     return data;
 } 
 }
+
