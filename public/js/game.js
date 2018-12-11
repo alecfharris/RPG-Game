@@ -1,35 +1,55 @@
+var characters;
+var attacks;
 var Unit = new Phaser.Class({
     Extends: Phaser.GameObjects.Sprite,
 
     initialize:
 
-        function Unit(scene, x, y, texture, frame, type, hp, damage) {
-            Phaser.GameObjects.Sprite.call(this, scene, x, y, texture, frame)
+        //     function Unit(scene, x, y, texture, frame, type, hp, damage) {
+        //         Phaser.GameObjects.Sprite.call(this, scene, x, y, texture, frame)
+        //         this.type = type;
+        //         this.maxHp = this.hp = hp;
+        //         this.damage = damage; // default damage
+        //         this.living = true;
+        //         this.menuItem = null;
+
+        //     },
+
+        // level, hp, pAtk, pDef, mAtk, mDef, speed, weapons, mMagic
+        function Unit(scene, x, y, texture, frame, type, damage, dbData) {
+            Phaser.GameObjects.Sprite.call(this, scene, x, y, texture, frame);
+
+            this.level = dbData.Level;
+            this.maxHp = dbData.HP = this.hp;
+            this.pAtk = dbData.Physical_Attack;
+            this.pDef = dbData.Physical_Def;
+            this.mAtk = dbData.Magical_Attack;
+            this.mDef = dbData.Magical_Defense;
+            this.speed = dbData.Speed;
+
             this.type = type;
-            this.maxHp = this.hp = hp;
             this.damage = damage; // default damage
             this.living = true;
             this.menuItem = null;
-                
         },
-        
+
     // we will use this to notify the menu item when the unit is dead
     setMenuItem: function (item) {
         this.menuItem = item;
     },
     attack: function (target) {
-        if(target.living) {
+        if (target.living) {
             target.takeDamage(this.damage);
             this.scene.events.emit("Message", this.type + " attacks " + target.type + " for " + this.damage + " damage");
         }
     },
     takeDamage: function (damage) {
         this.hp -= damage;
-        if(this.hp <= 0) {
+        if (this.hp <= 0) {
             this.hp = 0;
             this.menuItem.unitKilled();
             this.living = false;
-            this.visible = false;   
+            this.visible = false;
             this.menuItem = null;
         }
     }
@@ -39,8 +59,9 @@ var Enemy = new Phaser.Class({
     Extends: Unit,
 
     initialize:
-        function Enemy(scene, x, y, texture, frame, type, hp, damage) {
-            Unit.call(this, scene, x, y, texture, frame, type, hp, damage);
+        // function Enemy(scene, x, y, texture, frame, type, hp, damage) {
+        function Enemy(scene, x, y, texture, frame, type, damage, dbData) {
+            Unit.call(this, scene, x, y, texture, frame, type, damage, dbData);
         }
 });
 
@@ -48,8 +69,9 @@ var PlayerCharacter = new Phaser.Class({
     Extends: Unit,
 
     initialize:
-        function PlayerCharacter(scene, x, y, texture, frame, type, hp, damage) {
-            Unit.call(this, scene, x, y, texture, frame, type, hp, damage);
+        // function PlayerCharacter(scene, x, y, texture, frame, type, hp, damage) {
+        function PlayerCharacter(scene, x, y, texture, frame, type, damage, dbData) {
+            Unit.call(this, scene, x, y, texture, frame, type, damage, dbData);
             // flip the image so I don't have to edit it manually
             this.flipX = true;
 
@@ -73,12 +95,15 @@ var BootScene = new Phaser.Class({
         // load resources
         this.load.spritesheet('playerwarrior', 'assets/RPG_assets_warrior.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('playermage', 'assets/RPG_assets_mage.png', { frameWidth: 16, frameHeight: 16 });
+
         this.load.image('dragonblue', 'assets/EnemyPaladin.png');
         this.load.image('dragonorange', 'assets/EnemySpellcaster.png');
+        getCharacters();
     },
 
     create: function () {
         this.scene.start('BattleScene');
+        console.log(characters);
     }
 });
 
@@ -113,7 +138,7 @@ var BattleScene = new Phaser.Class({
         }
 
         else {
-           this.nextTurn();
+            this.nextTurn();
         }
     },
 
@@ -130,17 +155,24 @@ var BattleScene = new Phaser.Class({
             this.cameras.main.setBackgroundColor('rgba(0, 200, 0, 0.5)');
 
             // player character - warrior
-            var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, 20);
+            // var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, 20);
+            var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, characters[1]);
+            console.log(`warrior level ${warrior.level}`)
             this.add.existing(warrior);
 
             // player character - mage
-            var mage = new PlayerCharacter(this, 250, 100, 'playermage', 4, 'Mage', 80, 8);
+            // var mage = new PlayerCharacter(this, 250, 100, 'playermage', 4, 'Mage', 80, 8);
+            var mage = new PlayerCharacter(this, 250, 100, 'playermage', 4, 'Mage', 8, characters[0]);
             this.add.existing(mage);
 
-            var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 50, 3);
+            // var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 50, 3);
+            var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 3, characters[4]);
+            // getData('Enemy Spellcaster'));
             this.add.existing(dragonblue);
 
-            var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 50, 3);
+            // var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 50, 3);
+            var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 3, characters[5]);
+            // getData('Enemy FightMage'));
             this.add.existing(dragonOrange);
 
             // array with heroes
@@ -276,7 +308,7 @@ var MenuItem = new Phaser.Class({
     },
 
     // when the associated enemy or player unit is killed
-    unitKilled: function() {
+    unitKilled: function () {
         this.active = false;
         this.visible = false;
     }
@@ -296,42 +328,42 @@ var Menu = new Phaser.Class({
             this.x = x;
             this.y = y;
         },
-        addMenuItem: function(unit) {
-            var menuItem = new MenuItem(0, this.menuItems.length * 20, unit, this.scene);
-            this.menuItems.push(menuItem);
-            this.add(menuItem); 
-            return menuItem;
-        },
-     moveSelectionUp: function() {
+    addMenuItem: function (unit) {
+        var menuItem = new MenuItem(0, this.menuItems.length * 20, unit, this.scene);
+        this.menuItems.push(menuItem);
+        this.add(menuItem);
+        return menuItem;
+    },
+    moveSelectionUp: function () {
         this.menuItems[this.menuItemIndex].deselect();
         do {
             this.menuItemIndex--;
-            if(this.menuItemIndex < 0)
+            if (this.menuItemIndex < 0)
                 this.menuItemIndex = this.menuItems.length - 1;
-        } while(!this.menuItems[this.menuItemIndex].active);
+        } while (!this.menuItems[this.menuItemIndex].active);
         this.menuItems[this.menuItemIndex].select();
     },
-    moveSelectionDown: function() {
+    moveSelectionDown: function () {
         this.menuItems[this.menuItemIndex].deselect();
         do {
             this.menuItemIndex++;
-            if(this.menuItemIndex >= this.menuItems.length)
+            if (this.menuItemIndex >= this.menuItems.length)
                 this.menuItemIndex = 0;
-        } while(!this.menuItems[this.menuItemIndex].active);
+        } while (!this.menuItems[this.menuItemIndex].active);
         this.menuItems[this.menuItemIndex].select();
     },
-    select: function(index) {
-        if(!index)
-            index = 0;       
+    select: function (index) {
+        if (!index)
+            index = 0;
         this.menuItems[this.menuItemIndex].deselect();
         this.menuItemIndex = index;
-        while(!this.menuItems[this.menuItemIndex].active) {
+        while (!this.menuItems[this.menuItemIndex].active) {
             this.menuItemIndex++;
-            if(this.menuItemIndex >= this.menuItems.length)
+            if (this.menuItemIndex >= this.menuItems.length)
                 this.menuItemIndex = 0;
-            if(this.menuItemIndex == index)
+            if (this.menuItemIndex == index)
                 return;
-        }        
+        }
         this.menuItems[this.menuItemIndex].select();
         this.selected = true;
     },
@@ -351,11 +383,11 @@ var Menu = new Phaser.Class({
         this.menuItems.length = 0;
         this.menuItemIndex = 0;
     },
-    remap: function(units) {
-        this.clear();        
-        for(var i = 0; i < units.length; i++) {
+    remap: function (units) {
+        this.clear();
+        for (var i = 0; i < units.length; i++) {
             var unit = units[i];
-            unit.setMenuItem(this.addMenuItem(unit.type));          
+            unit.setMenuItem(this.addMenuItem(unit.type));
         }
         this.menuItemIndex = 0;
     }
@@ -450,21 +482,31 @@ var Message = new Phaser.Class({
 });
 
 var game = new Phaser.Game(config);
-var attacks;
-var characters;
-$.get('/api/attacks', function(data) {
+
+$.get('/api/attacks', function (data) {
     console.log(data);
     attacks = data;
-    for(var i = 0; i < attacks.length; i++) {
+    for (var i = 0; i < attacks.length; i++) {
         console.log(attacks[i].Weapon);
     }
 });
 
+function getCharacters() {
+    $.get('/api/characters', function (data) {
+        console.log(data);
+        characters = data;
+        for (var i = 0; i < characters.length; i++) {
+            console.log(characters[i].Name);
+        }
+    });
+}
 
-$.get('/api/characters', function(data) {
-    console.log(data);
-    characters = data;
-    for(var i = 0; i < characters.length; i++) {
-        console.log(characters[i].Name);
+
+const getData = characterName => {for (char in characters) {
+    if (characters[char].Name === characterName) {
+        var data = characters[char];
+
     }
-});
+    return data;
+} 
+}
