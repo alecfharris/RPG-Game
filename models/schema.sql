@@ -36,12 +36,11 @@ CREATE TABLE characters (
 );
 
 CREATE TABLE high_score (
-    id int NOT NULL AUTO_INCREMENT,
     Name varchar(3) NOT NULL,
     Score int NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (Score)
 
-)
+);
 
 INSERT INTO characters (Name, Level, HP, Physical_Attack, Physical_Defense, Magical_Attack, Magical_Defense, Speed, Weapons, Mage_Magic) VALUES ("Jacob", 50, 133, 50, 65, 100, 100, 75, False, True);
 
