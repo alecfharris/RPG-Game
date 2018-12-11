@@ -52,3 +52,7 @@ INSERT INTO characters (Name, Level, HP, Physical_Attack, Physical_Defense, Magi
 INSERT INTO characters (Name, Level, HP, Physical_Attack, Physical_Defense, Magical_Attack, Magical_Defense, Speed, Weapons, Mage_Magic) VALUES ("Enemy Paladin", 55, 190, 113, 145, 113, 145, 95, True, False);
 
 INSERT INTO characters (Name, Level, HP, Physical_Attack, Physical_Defense, Magical_Attack, Magical_Defense, Speed, Weapons, Mage_Magic) VALUES ("Ultimate Enemy", 60, 232, 167, 167, 167, 167, 167, True, True);
+
+INSERT INTO attacks (Weapon, Power, Accuracy, Magical) VALUES ("Fire", 60, 100, True);
+INSERT INTO attacks (Weapon, Power, Accuracy, Magical) VALUES ("Ice", 90, 95, True);
+INSERT INTO attacks (Weapon, Power, Accuracy, Magical) VALUES ("Lightning", 110, 80, True);
