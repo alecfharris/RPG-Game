@@ -55,4 +55,4 @@ INSERT INTO characters (Name, Level, HP, Physical_Attack, Physical_Defense, Magi
 
 INSERT INTO attacks (Weapon, Power, Accuracy, Magical) VALUES ("Fire", 60, 100, True);
 INSERT INTO attacks (Weapon, Power, Accuracy, Magical) VALUES ("Ice", 90, 95, True);
-INSERT INTO attacks (Weapon, Power, Accuracy, Magical) VALUES ("Lightning", 110, 80, True);
+INSERT INTO attacks (Weapon, Power, Accuracy, Magical) VALUES ("LIghtning", 110, 80, True);
