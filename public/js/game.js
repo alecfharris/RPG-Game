@@ -20,9 +20,10 @@ var Unit = new Phaser.Class({
             Phaser.GameObjects.Sprite.call(this, scene, x, y, texture, frame);
 
             this.level = dbData.Level;
-            this.maxHp = dbData.HP = this.hp;
+            this.maxHp = dbData.HP;
+            this.hp = this.maxHp;
             this.pAtk = dbData.Physical_Attack;
-            this.pDef = dbData.Physical_Def;
+            this.pDef = dbData.Physical_Defense;
             this.mAtk = dbData.Magical_Attack;
             this.mDef = dbData.Magical_Defense;
             this.speed = dbData.Speed;
@@ -39,6 +40,7 @@ var Unit = new Phaser.Class({
     },
     attack: function (target) {
         if (target.living) {
+            this.damage = Math.floor((((2*parseInt(this.level)/5+2)*60*(parseInt(this.pAtk)/parseInt(target.pDef)))+2)/50);
             target.takeDamage(this.damage);
             this.scene.events.emit("Message", this.type + " attacks " + target.type + " for " + this.damage + " damage");
         }
@@ -125,8 +127,8 @@ var BootScene = new Phaser.Class({
         this.load.spritesheet('playerwarrior', 'assets/RPG_assets_warrior.png', { frameWidth: 16, frameHeight: 16 });
         this.load.spritesheet('playermage', 'assets/RPG_assets_mage.png', { frameWidth: 16, frameHeight: 16 });
 
-        this.load.image('dragonblue', 'assets/EnemyPaladin.png');
-        this.load.image('dragonorange', 'assets/EnemySpellcaster.png');
+        this.load.image('dragonblue', 'assets/dragonblue.png');
+        this.load.image('dragonorange', 'assets/dragonorange.png');
         getCharacters();
     },
 
@@ -185,8 +187,8 @@ var BattleScene = new Phaser.Class({
 
             // player character - warrior
             // var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, 20);
-            var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, characters[1]);
-            console.log(`warrior level ${warrior.level}`)
+            var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 9000, characters[4]);
+            console.log(`warrior level ${warrior.level}`);
             this.add.existing(warrior);
 
             // player character - mage
@@ -195,12 +197,13 @@ var BattleScene = new Phaser.Class({
             this.add.existing(mage);
 
             // var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 50, 3);
-            var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 3, characters[4]);
+            var dragonblue = new Enemy(this, 50, 50, 'dragonblue', null, 'Dragon', 3, characters[3]);
             // getData('Enemy Spellcaster'));
             this.add.existing(dragonblue);
+            console.log(`dragonblue health ${dragonblue.hp}`);
 
             // var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 50, 3);
-            var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 3, characters[5]);
+            var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 3, characters[1]);
             // getData('Enemy FightMage'));
             this.add.existing(dragonOrange);
 
@@ -539,3 +542,4 @@ const getData = characterName => {for (char in characters) {
     return data;
 } 
 }
+
