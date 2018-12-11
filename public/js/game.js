@@ -1,85 +1,4 @@
 
-//  Variable that will hold our setInterval that runs the stopwatch
-var intervalId;
-
-// prevents the clock from being sped up unnecessarily
-var clockRunning = false;
-var stopwatch = {
-
-  time: 0,
-  lap: 1,
-
-  reset: function () {
-
-    stopwatch.time = 0;
-    stopwatch.lap = 1;
-
-    // DONE: Change the "display" div to "00:00."
-    $("#display").text("00:00");
-
-    // DONE: Empty the "laps" div.
-    $("#laps").text("");
-  },
-  start: function () {
-
-    // DONE: Use setInterval to start the count here and set the clock to running.
-    if (!clockRunning) {
-      intervalId = setInterval(stopwatch.count, 1000);
-      clockRunning = true;
-    }
-  },
-  stop: function () {
-
-    // DONE: Use clearInterval to stop the count here and set the clock to not be running.
-    clearInterval(intervalId);
-    clockRunning = false;
-  },
-  recordLap: function () {
-
-    // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
-    //       and save the result in a variable.
-    var converted = stopwatch.timeConverter(stopwatch.time);
-
-    // DONE: Add the current lap and time to the "laps" div.
-    $("#laps").append("<p>Lap " + stopwatch.lap + " : " + converted + "</p>");
-
-    // DONE: Increment lap by 1. Remember, we can't use "this" here.
-    stopwatch.lap++;
-  },
-  count: function () {
-
-    // DONE: increment time by 1, remember we cant use "this" here.
-    stopwatch.time++;
-
-    // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
-    //       and save the result in a variable.
-    var converted = stopwatch.timeConverter(stopwatch.time);
-    //   console.log(converted);
-
-    // DONE: Use the variable we just created to show the converted time in the "display" div.
-    $("#display").text(converted);
-  },
-  timeConverter: function (t) {
-
-    var minutes = Math.floor(t / 60);
-    var seconds = t - (minutes * 60);
-
-    if (seconds < 10) {
-      seconds = "0" + seconds;
-    }
-
-    if (minutes === 0) {
-      minutes = "00";
-    }
-    else if (minutes < 10) {
-      minutes = "0" + minutes;
-    }
-
-    return minutes + ":" + seconds;
-  }
-};
-stopwatch.start();
-//   console.log(stopwatch.time)
 
 var characters;
 var attacks;
@@ -137,8 +56,10 @@ var Unit = new Phaser.Class({
       this.living = false;
       this.visible = false;
       this.menuItem = null;
-      stopwatch.stop();
-      console.log("length of game: " + stopwatch.time);
+
+    //   TODO move this somewhere else
+      timer.stop();
+      console.log("length of game: " + timer.time);
     }
   },
   checkEndBattle: function () {
@@ -219,7 +140,6 @@ var BootScene = new Phaser.Class({
     this.load.spritesheet('playermage', 'assets/RPG_assets_mage.png', { frameWidth: 16, frameHeight: 16 });
     this.load.image('dragonblue', 'assets/dragonblue.png');
     this.load.image('dragonorange', 'assets/dragonorange.png');
-    // clock;
     getCharacters();
   },
 
@@ -278,13 +198,13 @@ var BattleScene = new Phaser.Class({
 
       // player character - warrior
       // var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, 20);
-      var warrior = new PlayerCharacter(this, 550, 180, 'playerwarrior', 1, 'Warrior', 9000, characters[4]);
+      var warrior = new PlayerCharacter(this, 900, 180, 'playerwarrior', 1, 'Warrior', 9000, characters[4]);
       console.log(`warrior level ${warrior.level}`);
       this.add.existing(warrior);
 
       // player character - mage
       // var mage = new PlayerCharacter(this, 250, 100, 'playermage', 4, 'Mage', 80, 8);
-      var mage = new PlayerCharacter(this, 550, 350, 'playermage', 4, 'Mage', 8, characters[0]);
+      var mage = new PlayerCharacter(this, 900, 350, 'playermage', 4, 'Mage', 8, characters[0]);
       this.add.existing(mage);
 
       // var dragonblue = new Enemy(this, 250, 550, 'dragonblue', null, 'Dragon', 50, 3);
@@ -374,24 +294,24 @@ var UIScene = new Phaser.Class({
     this.graphics.fillStyle(0x031f4c, 1);
 
     // dragon & dragon2 header text box
-    this.graphics.strokeRect(252, 550, 95, 100);
-    this.graphics.fillRect(252, 551, 93, 99);
+    this.graphics.strokeRect(402, 575, 95, 100);
+    this.graphics.fillRect(402, 576, 93, 99);
 
     // attack header text box
-    this.graphics.strokeRect(347, 550, 95, 100);
-    this.graphics.fillRect(347, 551, 93, 99);
+    this.graphics.strokeRect(497, 575, 95, 100);
+    this.graphics.fillRect(497, 576, 93, 99);
 
     // Warrior & Mage header text box
-    this.graphics.strokeRect(442, 550, 95, 100);
-    this.graphics.fillRect(442, 551, 93, 99);
+    this.graphics.strokeRect(592, 575, 95, 100);
+    this.graphics.fillRect(592, 576, 93, 99);
 
     // basic container to hold all menus
     this.menus = this.add.container();
 
     //header text
-    this.heroesMenu = new HeroesMenu(451, 565, this);
-    this.actionsMenu = new ActionsMenu(358, 565, this);
-    this.enemiesMenu = new EnemiesMenu(265, 565, this);
+    this.heroesMenu = new HeroesMenu(601, 590, this);
+    this.actionsMenu = new ActionsMenu(508, 590, this);
+    this.enemiesMenu = new EnemiesMenu(415, 590, this);
 
     // the currently selected menu 
     this.currentMenu = this.actionsMenu;
@@ -585,7 +505,7 @@ var Message = new Phaser.Class({
 
   initialize:
     function Message(scene, events) {
-      Phaser.GameObjects.Container.call(this, scene, 160, 30);
+      Phaser.GameObjects.Container.call(this, scene, 570, 30);
       var graphics = this.scene.add.graphics();
       this.add(graphics);
       graphics.lineStyle(1, 0xffffff, 0.8);

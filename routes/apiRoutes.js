@@ -21,20 +21,20 @@ module.exports = function(app) {
     });
   });
 
-  // Get specific character
-        app.get('/api/playerCharacter/:character', function (req, res) {
-            let chosen = req.params.character;
-            db.characters.findAll({
-                where: {
-                    Name: chosen
-                }
-            }).then(function (data) {
-                res.json(data);
-                console.log(data);
-                // createPlayerCharacter(data)
+  // // Get specific character
+  //       app.get('/api/playerCharacter/:character', function (req, res) {
+  //           let chosen = req.params.character;
+  //           db.characters.findAll({
+  //               where: {
+  //                   Name: chosen
+  //               }
+  //           }).then(function (data) {
+  //               res.json(data);
+  //               console.log(data);
+  //               // createPlayerCharacter(data)
     
-            });
-        });
+  //           });
+  //       });
 
   // Create a new example
   app.post("/api/examples", function(req, res) {
