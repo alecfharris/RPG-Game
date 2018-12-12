@@ -1,88 +1,8 @@
 
-//  Variable that will hold our setInterval that runs the stopwatch
-var intervalId;
-
-// prevents the clock from being sped up unnecessarily
-var clockRunning = false;
-var stopwatch = {
-
-  time: 0,
-  lap: 1,
-
-  reset: function () {
-
-    stopwatch.time = 0;
-    stopwatch.lap = 1;
-
-    // DONE: Change the "display" div to "00:00."
-    $("#display").text("00:00");
-
-    // DONE: Empty the "laps" div.
-    $("#laps").text("");
-  },
-  start: function () {
-
-    // DONE: Use setInterval to start the count here and set the clock to running.
-    if (!clockRunning) {
-      intervalId = setInterval(stopwatch.count, 1000);
-      clockRunning = true;
-    }
-  },
-  stop: function () {
-
-    // DONE: Use clearInterval to stop the count here and set the clock to not be running.
-    clearInterval(intervalId);
-    clockRunning = false;
-  },
-  recordLap: function () {
-
-    // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
-    //       and save the result in a variable.
-    var converted = stopwatch.timeConverter(stopwatch.time);
-
-    // DONE: Add the current lap and time to the "laps" div.
-    $("#laps").append("<p>Lap " + stopwatch.lap + " : " + converted + "</p>");
-
-    // DONE: Increment lap by 1. Remember, we can't use "this" here.
-    stopwatch.lap++;
-  },
-  count: function () {
-
-    // DONE: increment time by 1, remember we cant use "this" here.
-    stopwatch.time++;
-
-    // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
-    //       and save the result in a variable.
-    var converted = stopwatch.timeConverter(stopwatch.time);
-    //   console.log(converted);
-
-    // DONE: Use the variable we just created to show the converted time in the "display" div.
-    $("#display").text(converted);
-  },
-  timeConverter: function (t) {
-
-    var minutes = Math.floor(t / 60);
-    var seconds = t - (minutes * 60);
-
-    if (seconds < 10) {
-      seconds = "0" + seconds;
-    }
-
-    if (minutes === 0) {
-      minutes = "00";
-    }
-    else if (minutes < 10) {
-      minutes = "0" + minutes;
-    }
-
-    return minutes + ":" + seconds;
-  }
-};
-stopwatch.start();
-//   console.log(stopwatch.time)
 
 var characters;
 var attacks;
+var gameEnded = false;
 
 var Unit = new Phaser.Class({
   Extends: Phaser.GameObjects.Sprite,
@@ -137,39 +57,23 @@ var Unit = new Phaser.Class({
       this.living = false;
       this.visible = false;
       this.menuItem = null;
-      stopwatch.stop();
-      console.log("length of game: " + stopwatch.time);
     }
   },
-  checkEndBattle: function () {
-    var victory = true;
-    // if all enemies are dead we have victory
-    for (var i = 0; i < this.enemies.length; i++) {
-      if (this.enemies[i].living)
-        victory = false;
-    }
-    var gameOver = true;
-    // if all heroes are dead we have game over
-    for (var i = 0; i < this.heroes.length; i++) {
-      if (this.heroes[i].living)
-        gameOver = false;
-    }
-    return victory || gameOver;
-  },
-  endBattle: function () {
-    // clear state, remove sprites
-    this.heroes.length = 0;
-    this.enemies.length = 0;
-    for (var i = 0; i < this.units.length; i++) {
-      // link item
-      this.units[i].destroy();
-    }
-    this.units.length = 0;
-    // sleep the UI
-    this.scene.sleep('UIScene');
-    // return to WorldScene and sleep current BattleScene
-    this.scene.switch('WorldScene');
-  },
+
+  // endBattle: function () {
+  //   // clear state, remove sprites
+  //   this.heroes.length = 0;
+  //   this.enemies.length = 0;
+  //   for (var i = 0; i < this.units.length; i++) {
+  //     // link item
+  //     this.units[i].destroy();
+  //   }
+  //   this.units.length = 0;
+  //   // sleep the UI
+  //   this.scene.sleep('UIScene');
+  //   // return to WorldScene and sleep current BattleScene
+  //   this.scene.switch('WorldScene');
+  // },
 });
 
 var Enemy = new Phaser.Class({
@@ -219,13 +123,11 @@ var BootScene = new Phaser.Class({
     this.load.spritesheet('playermage', 'assets/RPG_assets_mage.png', { frameWidth: 16, frameHeight: 16 });
     this.load.image('dragonblue', 'assets/dragonblue.png');
     this.load.image('dragonorange', 'assets/dragonorange.png');
-    // clock;
     getCharacters();
   },
 
   create: function () {
     this.scene.start('BattleScene');
-    console.log(characters);
   }
 });
 
@@ -240,6 +142,7 @@ var BattleScene = new Phaser.Class({
     },
 
   nextTurn: function () {
+    this.checkEndBattle();
     this.index++;
     // if there are no more units, we start again from the first one
     if (this.index >= this.units.length) {
@@ -264,6 +167,37 @@ var BattleScene = new Phaser.Class({
     }
   },
 
+  checkEndBattle: function () {
+    var victory = true;
+    // if all enemies are dead we have victory
+    for (var i = 0; i < this.enemies.length; i++) {
+      if (this.enemies[i].living) {
+        victory = false;
+      }
+    }
+    var gameOver = true;
+    // if all heroes are dead we have game over
+    for (var i = 0; i < this.heroes.length; i++) {
+      if (this.heroes[i].living) {
+        gameOver = false;
+      }
+    }
+
+    if (victory === true && gameEnded === false) {
+      timer.stop();
+      let score = 1000 - timer.time;
+      highScorePrompt(score);
+      gameEnded = true;
+    }
+
+    else if (gameOver === true && gameEnded ===false) {
+      timer.stop();
+      alert('Game Over! Refresh this page to try again!');
+      gameEnded = true;
+    }
+    // return victory || gameOver;
+  },
+
   receivePlayerSelection: function (action, target) {
     if (action == 'attack') {
       this.units[this.index].attack(this.enemies[target]);
@@ -278,20 +212,18 @@ var BattleScene = new Phaser.Class({
 
       // player character - warrior
       // var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, 20);
-      var warrior = new PlayerCharacter(this, 550, 180, 'playerwarrior', 1, 'Warrior', 9000, characters[4]);
-      console.log(`warrior level ${warrior.level}`);
+      var warrior = new PlayerCharacter(this, 900, 180, 'playerwarrior', 1, 'Warrior', 9000, characters[4]);
       this.add.existing(warrior);
 
       // player character - mage
       // var mage = new PlayerCharacter(this, 250, 100, 'playermage', 4, 'Mage', 80, 8);
-      var mage = new PlayerCharacter(this, 550, 350, 'playermage', 4, 'Mage', 8, characters[0]);
+      var mage = new PlayerCharacter(this, 900, 350, 'playermage', 4, 'Mage', 8, characters[0]);
       this.add.existing(mage);
 
       // var dragonblue = new Enemy(this, 250, 550, 'dragonblue', null, 'Dragon', 50, 3);
       var dragonblue = new Enemy(this, 200, 200, 'dragonblue', null, 'Dragon', 3, characters[3]);
       // getData('Enemy Spellcaster'));
       this.add.existing(dragonblue);
-      console.log(`dragonblue health ${dragonblue.hp}`);
 
       // var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 50, 3);
       var dragonOrange = new Enemy(this, 200, 350, 'dragonorange', null, 'Dragon2', 3, characters[1]);
@@ -374,24 +306,24 @@ var UIScene = new Phaser.Class({
     this.graphics.fillStyle(0x031f4c, 1);
 
     // dragon & dragon2 header text box
-    this.graphics.strokeRect(252, 550, 95, 100);
-    this.graphics.fillRect(252, 551, 93, 99);
+    this.graphics.strokeRect(402, 575, 95, 100);
+    this.graphics.fillRect(402, 576, 93, 99);
 
     // attack header text box
-    this.graphics.strokeRect(347, 550, 95, 100);
-    this.graphics.fillRect(347, 551, 93, 99);
+    this.graphics.strokeRect(497, 575, 95, 100);
+    this.graphics.fillRect(497, 576, 93, 99);
 
     // Warrior & Mage header text box
-    this.graphics.strokeRect(442, 550, 95, 100);
-    this.graphics.fillRect(442, 551, 93, 99);
+    this.graphics.strokeRect(592, 575, 95, 100);
+    this.graphics.fillRect(592, 576, 93, 99);
 
     // basic container to hold all menus
     this.menus = this.add.container();
 
     //header text
-    this.heroesMenu = new HeroesMenu(451, 565, this);
-    this.actionsMenu = new ActionsMenu(358, 565, this);
-    this.enemiesMenu = new EnemiesMenu(265, 565, this);
+    this.heroesMenu = new HeroesMenu(601, 590, this);
+    this.actionsMenu = new ActionsMenu(508, 590, this);
+    this.enemiesMenu = new EnemiesMenu(415, 590, this);
 
     // the currently selected menu 
     this.currentMenu = this.actionsMenu;
@@ -585,7 +517,7 @@ var Message = new Phaser.Class({
 
   initialize:
     function Message(scene, events) {
-      Phaser.GameObjects.Container.call(this, scene, 160, 30);
+      Phaser.GameObjects.Container.call(this, scene, 570, 30);
       var graphics = this.scene.add.graphics();
       this.add(graphics);
       graphics.lineStyle(1, 0xffffff, 0.8);
@@ -597,7 +529,6 @@ var Message = new Phaser.Class({
       this.text.setOrigin(0.5);
       events.on("Message", this.showMessage, this);
       this.visible = false;
-      console.log("Message Function happened.");
     },
   showMessage: function (text) {
     this.text.setText(text);
@@ -605,7 +536,6 @@ var Message = new Phaser.Class({
     if (this.hideEvent)
       this.hideEvent.remove(false);
     this.hideEvent = this.scene.time.addEvent({ delay: 2000, callback: this.hideMessage, callbackScope: this });
-    console.log("show Message Function happened.");
   },
   hideMessage: function () {
     this.hideEvent = null;
@@ -616,19 +546,15 @@ var Message = new Phaser.Class({
 var game = new Phaser.Game(config);
 
 $.get('/api/attacks', function (data) {
-  console.log(data);
   attacks = data;
   for (var i = 0; i < attacks.length; i++) {
-    console.log(attacks[i].Weapon);
   }
 });
 
 function getCharacters() {
   $.get('/api/characters', function (data) {
-    console.log(data);
     characters = data;
     for (var i = 0; i < characters.length; i++) {
-      console.log(characters[i].Name);
     }
   });
 }
