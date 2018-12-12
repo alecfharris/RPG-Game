@@ -53,7 +53,7 @@ var timer = {
     // DONE: Get the current time, pass that into the stopwatch.timeConverter function,
     //       and save the result in a variable.
     var converted = timer.timeConverter(timer.time);
-      console.log(converted);
+      // console.log(converted);
 
     // DONE: Use the variable we just created to show the converted time in the "display" div.
     $("#display").text(converted);

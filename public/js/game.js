@@ -57,10 +57,6 @@ var Unit = new Phaser.Class({
       this.living = false;
       this.visible = false;
       this.menuItem = null;
-
-      //   TODO move this somewhere else
-      timer.stop();
-      console.log("length of game: " + timer.time);
     }
   },
 
@@ -132,7 +128,6 @@ var BootScene = new Phaser.Class({
 
   create: function () {
     this.scene.start('BattleScene');
-    console.log(characters);
   }
 });
 
@@ -218,7 +213,6 @@ var BattleScene = new Phaser.Class({
       // player character - warrior
       // var warrior = new PlayerCharacter(this, 250, 50, 'playerwarrior', 1, 'Warrior', 100, 20);
       var warrior = new PlayerCharacter(this, 900, 180, 'playerwarrior', 1, 'Warrior', 9000, characters[4]);
-      console.log(`warrior level ${warrior.level}`);
       this.add.existing(warrior);
 
       // player character - mage
@@ -230,7 +224,6 @@ var BattleScene = new Phaser.Class({
       var dragonblue = new Enemy(this, 200, 200, 'dragonblue', null, 'Dragon', 3, characters[3]);
       // getData('Enemy Spellcaster'));
       this.add.existing(dragonblue);
-      console.log(`dragonblue health ${dragonblue.hp}`);
 
       // var dragonOrange = new Enemy(this, 50, 100, 'dragonorange', null, 'Dragon2', 50, 3);
       var dragonOrange = new Enemy(this, 200, 350, 'dragonorange', null, 'Dragon2', 3, characters[1]);
@@ -536,7 +529,6 @@ var Message = new Phaser.Class({
       this.text.setOrigin(0.5);
       events.on("Message", this.showMessage, this);
       this.visible = false;
-      console.log("Message Function happened.");
     },
   showMessage: function (text) {
     this.text.setText(text);
@@ -544,7 +536,6 @@ var Message = new Phaser.Class({
     if (this.hideEvent)
       this.hideEvent.remove(false);
     this.hideEvent = this.scene.time.addEvent({ delay: 2000, callback: this.hideMessage, callbackScope: this });
-    console.log("show Message Function happened.");
   },
   hideMessage: function () {
     this.hideEvent = null;
@@ -555,19 +546,15 @@ var Message = new Phaser.Class({
 var game = new Phaser.Game(config);
 
 $.get('/api/attacks', function (data) {
-  console.log(data);
   attacks = data;
   for (var i = 0; i < attacks.length; i++) {
-    console.log(attacks[i].Weapon);
   }
 });
 
 function getCharacters() {
   $.get('/api/characters', function (data) {
-    console.log(data);
     characters = data;
     for (var i = 0; i < characters.length; i++) {
-      console.log(characters[i].Name);
     }
   });
 }
