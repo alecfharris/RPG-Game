@@ -9,4 +9,4 @@ Use the spacebar to confirm input and then select a target with the arrow keys. 
 The deployed project can be found [here](https://glacial-woodland-52281.herokuapp.com/).
 
 ## Example Image
-![Afterlife Dragon](https://i.ibb.co/GnGS6CD/Afterlife-Dragon-Resize-50.png "Afterlife Dragon")
+![Afterlife Dragon](https://i.ibb.co/ynMGRtJ/Afterlife-Dragon-2-Resize-50.png "Afterlife Dragon")
